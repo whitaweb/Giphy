@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
 var topics = ["Prince", "Beyonce", "Michael Jackson", "Britney Spears", "Aerosmith", "Queen", "Shakira"];	
-var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + addMusician + "&api_key=dc6zaTOxFJmzC&limit=10";
+var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + addMusician + "&api_key=dc6zaTOxFJmzC&limit=10";
 
 
 
@@ -24,15 +24,12 @@ function createButtons(){
 // Add click event to all buttons
    function displayGifs() {
 
-   	
-   	console.log(urlSearch);
 
     	$('#musicians').empty();
 
-
-
     var thisMusician = $(this).data('name');
-    var urlSearch = "http://api.giphy.com/v1/gifs/search?q=" + thisMusician + "&limit=10&api_key=dc6zaTOxFJmzC";
+    var number = Math.floor(Math.random()*101);
+    var urlSearch = "https://api.giphy.com/v1/gifs/search?q=" + thisMusician + "&api_key=dc6zaTOxFJmzC&limit=10";
 
 
     $.ajax({
@@ -43,14 +40,14 @@ function createButtons(){
     // // / After the data comes back from the API
         .done(function(response) {
 
-        	console.log("This Musician" + thisMusician);
+        	// console.log("This Musician" + thisMusician);
 
-          	console.log(response);
+         //  	console.log(response);
 
               var gifDiv = $("#musicians");
 
               var data = response.data;
-                console.log("Data:" + data);
+                // console.log("Data:" + data);
 
                 for (var i = 0; i < data.length; i++){
 
@@ -68,9 +65,10 @@ function createButtons(){
               // Creating an image tag
               var gifImage = $("<img>");
 
-              // Giving the image tag an src attribute of a proprty pulled off the
-              // result item
+              // Giving the image tag an src attribute to use in data state function
               gifImage.attr("src", data[i].images.fixed_height_still.url);
+              gifImage.attr("data-animate", data[i].images.fixed_height.url);
+              gifImage.attr("data-state", "still");
 
               // Appending the paragraph and personImage we created to the "gifDiv" div we created
               
@@ -87,9 +85,12 @@ function createButtons(){
             });
 
 
-          }
+          };
 
-    //sets a button from input
+
+         
+
+    //sets a button from input by pushing it into topics array
 $('#addMusician').on('click', function(){
 	event.preventDefault();
 	var userChoice = $('#musicianinput').val().trim();
@@ -98,12 +99,31 @@ $('#addMusician').on('click', function(){
 	createButtons();
 	return false;
 
-	console.log(userChoice);
+	// console.log(userChoice);
 });
 
 createButtons();
 
+ function animateGifs() {
+
+            var state = $(this).attr("data-state");
+
+            // console.log("This" + this);
+
+                
+                if(state === "still"){
+                  $(this).attr("src", $(this).attr("data-animate"));
+                  $(this).attr("data-state", "animate");
+                } else {
+                  $(this).attr("src", $(this).attr("data-still"));
+                  $(this).attr("data-state", "still");
+                }
+
+         
+          };
+
 
 $(document).on("click", ".topicsBtn", displayGifs);
+$(document).on("click", "img", animateGifs);
 
 });
